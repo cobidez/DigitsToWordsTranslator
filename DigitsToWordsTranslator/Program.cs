@@ -4,9 +4,10 @@
     {
         static void Main(string[] args)
         {
-            Digit digit = new Digit(-1234567);
-            digit.Show();
-            //Console.WriteLine("123456".Substring(3,3));
+            var stringNumber = new StringNumber(-1234567.12);
+            stringNumber.Show();
+            //Console.WriteLine(123.456 - (int)123.456);
+
         }
     }
 }
