@@ -10,6 +10,7 @@ internal class Digit
 {
     private List<String> _parsedDigitOnIndexes = new List<String>();
     private const int _indexSize = 3;
+    private bool _isNegative;
 
     public Digit(int integerValue)
     {
@@ -22,10 +23,19 @@ internal class Digit
         {
             Console.WriteLine(index);
         }
+        Console.WriteLine($"_isNegative = {_isNegative}");
     }
 
     private void InitDigit(int integerValue)
     {
+        // Обрабатываем знак числа
+        if (integerValue < 0)
+        {
+            _isNegative = true;
+            integerValue *= -1; // Меняем знак, чтобы можно было нормально порезать на символы.
+        }
+
+        // Разделяем число на массив символов по разряду числа
         string stringIntegerValue = Convert.ToString(integerValue);
 
         int greaterIndexDigitsCountMod = stringIntegerValue.Length % _indexSize;
@@ -36,11 +46,22 @@ internal class Digit
 
         for (int i = 0; i < loopCount; i++)
         {
-            int substrFromIndex = stringIntegerValue.Length - _indexSize * (i + 1);
-            // Если это последняя итерация цикла и кол-во цифр в старшем разряде не равно 3
-            int substrLength = (i + 1 == loopCount && greaterIndexDigitsCount != _indexSize) ? greaterIndexDigitsCount : _indexSize;
-            string substredString = stringIntegerValue.Substring(substrFromIndex, substrLength);
+            int substrFromIndex;
+            int substrLength;
 
+            // Если это последняя итерация цикла и кол-во цифр в старшем разряде не равно 3
+            if (i + 1 == loopCount)
+            {
+                substrFromIndex = 0; //Старший разряд всегда будет резаться с первого элемента
+                substrLength = greaterIndexDigitsCount;
+            }
+            else
+            {
+                substrFromIndex = stringIntegerValue.Length - _indexSize * (i + 1);
+                substrLength = _indexSize;
+            }
+
+            string substredString = stringIntegerValue.Substring(substrFromIndex, substrLength);
 
             _parsedDigitOnIndexes.Add(substredString);
         }
