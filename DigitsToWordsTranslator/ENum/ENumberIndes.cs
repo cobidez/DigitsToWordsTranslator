@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DigitsToWordsTranslator;
+namespace DigitsToWordsTranslator.ENum;
 
-internal enum EGender
+internal enum ENumberIndes
 {
-    MALE,
-    FEMALE,
-    MIDDLE
+    UNIT,
+    THOUSAND,
+    MILLION,
+    BILLION
 }
+

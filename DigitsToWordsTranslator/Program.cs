@@ -1,13 +1,15 @@
-﻿namespace DigitsToWordsTranslator
+﻿using DigitsToWordsTranslator.Data;
+using DigitsToWordsTranslator.ENum;
+
+namespace DigitsToWordsTranslator
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            var stringNumber = new StringNumber(-1234567.12);
-            stringNumber.ShowStructure();
-            //Console.WriteLine(123.456 - (int)123.456);
-
+            //var textNumber = new TextNumber(-12345678);
+            //textNumber.ShowStructure();
+            Console.WriteLine(NumberTextValueDict.GetValue(2, EGender.MIDDLE));
         }
     }
 }
