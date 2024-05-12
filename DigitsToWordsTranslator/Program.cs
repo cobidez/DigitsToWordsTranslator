@@ -1,15 +1,15 @@
 ﻿using DigitsToWordsTranslator.Data;
 using DigitsToWordsTranslator.ENum;
 
-namespace DigitsToWordsTranslator
+namespace DigitsToWordsTranslator;
+
+internal class Program
 {
-    internal class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            //var textNumber = new TextNumber(-12345678);
-            //textNumber.ShowStructure();
-            Console.WriteLine(NumberTextValueDict.GetValue(2, EGender.MIDDLE));
-        }
+        var textNumber = new TextNumber(-12345678);
+        textNumber.PrintStructure();
+        textNumber.
+
     }
 }

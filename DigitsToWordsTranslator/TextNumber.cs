@@ -1,4 +1,7 @@
-﻿using System;
+﻿using DigitsToWordsTranslator.Data;
+using DigitsToWordsTranslator.ENum;
+using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -9,30 +12,80 @@ namespace DigitsToWordsTranslator;
 
 internal class TextNumber
 {
-   // public static readonly Dictionary<int, IndexTextByGrammarCase> indexTextByGrammarCaseList = GetTextStringByGrammarCaseDict(); // Хранит шаблоны разрядов типа "тысяча", "миллион" и тд
     private static readonly int indexSize = 3; // Кол-во символов в разряде: 123 456 789
 
-    private int indexesCount; // Кол-во разрядов (под разрядами подразумеваются: единицы, тысячи, миллионы, миллиарды)
-    private Dictionary<int, int> parsedIntegerPartOnIndexesList = []; // Хранит индексы целой части
+    private int[] parsedIntegerPartOnIndexesList; // Хранит индексы целой части
     private bool isNegative; // Негативное ли число
 
+    /// <summary>
+    /// Конструктор, инициализирует целую часть
+    /// </summary>
+    /// <param name="integerValue"></param>
     public TextNumber(int integerValue)
     {
         InitNumberSign(integerValue);
         InitIntegerPart(integerValue);
     }
 
-    public void ShowStructure()
+    /// <summary>
+    /// Отпечатать структуру числа
+    /// </summary>
+    public void PrintStructure()
     {
         Console.WriteLine($"_isNegative = {isNegative}");
-        Console.WriteLine("IntegerPart");
-
-        foreach (var item in parsedIntegerPartOnIndexesList)
+        Console.WriteLine("IntegerPart:");
+        
+        for (int i = 0; i < parsedIntegerPartOnIndexesList.Length; i++)
         {
-            Console.WriteLine(item.Value);
+            Console.WriteLine($"\t{Enum.GetName(typeof(ENumberIndex),i)} index = {parsedIntegerPartOnIndexesList[i]}");
         }
     }
 
+    /// <summary>
+    /// Получить текст числа.
+    /// </summary>
+    /// <returns></returns>
+    public string ToStringText(EGender unitIndexGender)
+    {
+        var numberTextValueDict = new NumberTextValueDict(false);
+        var indexesTextOption = new IndexesTextOption(unitIndexGender);
+
+        StringBuilder result = new StringBuilder();
+
+        if (isNegative)
+        {
+            result.Append( "минус " );
+        }
+
+        // Бежим по распаршеным разрядам от больших разрядов к меньшим и формируем текст
+        for (int i = parsedIntegerPartOnIndexesList.Length; i > 0; i--)
+        {
+
+
+
+            result.Append(
+                numberTextValueDict.GetValue(
+                    parsedIntegerPartOnIndexesList[i],
+                    indexesTextOption.GetGender((ENumberIndex)i)
+                    ) + " ");
+        }
+
+        return result.ToString();
+    }
+
+    /// <summary>
+    /// Отпечатать число
+    /// </summary>
+    /// <param name="unitIndexGender"></param>
+    public void PrintStringText(EGender unitIndexGender)
+    {
+        Console.WriteLine(ToStringText(unitIndexGender));
+    }
+
+    /// <summary>
+    /// Проинициализировать целую часть
+    /// </summary>
+    /// <param name="integerValue"></param>
     private void InitIntegerPart(int integerValue)
     {
         if (integerValue < 0)
@@ -43,16 +96,22 @@ internal class TextNumber
         int numberLength = integerValue.ToString().Length;
 
         // Кол-во разрядов определяется как длина числа, деленная на кол-во цифр в разряде. + Необходимо добавить еще один разряд, если длина числа не кратна 3.
-        indexesCount = numberLength / indexSize + (numberLength % indexSize == 0 ? 0 : 1);
+        int indexesCount = numberLength / indexSize + (numberLength % indexSize == 0 ? 0 : 1);
+
+        // Инициализируем массив
+        parsedIntegerPartOnIndexesList = new int[indexesCount];
 
         for (int i = 0; i < indexesCount; i++)
         {
-            parsedIntegerPartOnIndexesList.Add(
-                i,
-                (integerValue / (int)Math.Pow( 10.0, i * indexSize)) % 1000); // Формула: Число / 10^i*3 % 1000
+            // Формула: Число / 10^i*3 % 1000
+            parsedIntegerPartOnIndexesList[i] = (integerValue / (int)Math.Pow( 10.0, i * indexSize)) % 1000; 
         }
     }
 
+    /// <summary>
+    /// Проинициализировать знак
+    /// </summary>
+    /// <param name="integerValue"></param>
     private void InitNumberSign(int integerValue)
     {
         // Обрабатываем знак числа
@@ -61,4 +120,7 @@ internal class TextNumber
             isNegative = true;
         }
     }
+
+    private 
+
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DigitsToWordsTranslator.ENum;
 
-internal enum ENumberIndes
+internal enum ENumberIndex
 {
     UNIT,
     THOUSAND,

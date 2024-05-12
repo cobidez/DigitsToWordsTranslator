@@ -9,15 +9,35 @@ namespace DigitsToWordsTranslator.Data;
 
 internal class NumberTextValueDict
 {
-    public static Dictionary<int, Dictionary<EGender, string>> dict = GetDict();
+    private static Dictionary<int, Dictionary<EGender, string>> dict = GetDict();
 
-    public static string GetValue(
+    public bool IsNeedToRaiseIfNotFound { get; set; }
+
+    /// <summary>
+    /// Конструктор объекта NumberTextValueDict
+    /// </summary>
+    /// <param name="isNeedToRaiseIfNotFound">Нужно ли рейзить ошибку, если не найдено значение</param>
+    public NumberTextValueDict(bool isNeedToRaiseIfNotFound)
+    {
+        IsNeedToRaiseIfNotFound = isNeedToRaiseIfNotFound;
+    }
+
+    /// <summary>
+    /// Получить значение в виде строки из справочника чисел.
+    /// </summary>
+    /// <param name="number">Число</param>
+    /// <param name="gender">Род слова, по которому выполняется поиск числа</param>
+    /// <param name="raiseIfNotFound">Рейзить ошибку, если не найдено значение</param>
+    /// <returns>Строка числа</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public string GetValue(
         int number,
         EGender gender, 
         bool raiseIfNotFound = true)
     {
-         if (!dict.ContainsKey(number))
+        if (!dict.ContainsKey(number))
         {
+            
             if (raiseIfNotFound)
             {
                 throw new ArgumentNullException();
@@ -29,10 +49,17 @@ internal class NumberTextValueDict
         }
 
         return GetValueByGenderOrDefault(
-            dict.GetValueOrDefault(number), 
-            gender);
+            numberTextValue: dict.GetValueOrDefault(number),
+            gender: gender);
     }
 
+    /// <summary>
+    /// Получить значение в виде строки из справочника чисел.
+    /// Если по данному роду значение не найдено, то выбирается дефолтное - мужского рода.
+    /// </summary>
+    /// <param name="numberTextValue"></param>
+    /// <param name="gender"></param>
+    /// <returns></returns>
     private static string GetValueByGenderOrDefault(
         Dictionary<EGender, string> numberTextValue, 
         EGender gender)
@@ -40,19 +67,31 @@ internal class NumberTextValueDict
         if (numberTextValue.TryGetValue(gender, out var value))
         {
             return value; 
-        } else
+        } 
+        else
         {
            return GetDefault(numberTextValue);
         }
     }
 
+    /// <summary>
+    /// Получить дефолтное значение.
+    /// Дефолтное значение - мужской род
+    /// </summary>
+    /// <param name="numberTextValue"></param>
+    /// <returns></returns>
     private static string GetDefault(Dictionary<EGender, string> numberTextValue)
          => numberTextValue.GetValueOrDefault(EGender.MALE);
 
+    /// <summary>
+    /// Получить справочник, используется для инициализации статического Dictionary
+    /// </summary>
+    /// <returns></returns>
     private static Dictionary<int, Dictionary<EGender, string>> GetDict()
     {
         Dictionary<int, Dictionary<EGender, string>> result = [];
 
+        AddToDict(ref result, 0, "ноль");
         AddToDict(ref result, 1, "один", "одна", "одно");
         AddToDict(ref result, 2, "два", "две");
         AddToDict(ref result, 3, "три");
@@ -93,6 +132,14 @@ internal class NumberTextValueDict
         return result;
     }
 
+    /// <summary>
+    /// Добавить информацию в справочник
+    /// </summary>
+    /// <param name="dict">Справочник(ссылка)</param>
+    /// <param name="number">Число справочника - является ключем</param>
+    /// <param name="maleGenderValue">Значение для мужского рода</param>
+    /// <param name="femaleGenderValue">Значение для женского рода</param>
+    /// <param name="middleGenderValue">Значение для среднего рода</param>
     private static void AddToDict(
         ref Dictionary<int, Dictionary<EGender, string>> dict,
         int number,
@@ -102,6 +149,7 @@ internal class NumberTextValueDict
     {
         Dictionary<EGender, string> fullGenderValue = [];
 
+        // Мужской род есть всегда
         fullGenderValue.Add(EGender.MALE, maleGenderValue);
 
         // Не храним пустые значения, будем их обрабатывать при получении
@@ -109,7 +157,8 @@ internal class NumberTextValueDict
         {
             fullGenderValue.Add(EGender.FEMALE, femaleGenderValue);
         }
-        if(middleGenderValue != null)
+
+        if (middleGenderValue != null)
         {
             fullGenderValue.Add(EGender.MIDDLE, middleGenderValue);
         }
