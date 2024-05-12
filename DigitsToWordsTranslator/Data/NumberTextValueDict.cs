@@ -27,18 +27,16 @@ internal class NumberTextValueDict
     /// </summary>
     /// <param name="number">Число</param>
     /// <param name="gender">Род слова, по которому выполняется поиск числа</param>
-    /// <param name="raiseIfNotFound">Рейзить ошибку, если не найдено значение</param>
     /// <returns>Строка числа</returns>
     /// <exception cref="ArgumentNullException"></exception>
     public string GetValue(
         int number,
-        EGender gender, 
-        bool raiseIfNotFound = true)
+        EGender gender)
     {
         if (!dict.ContainsKey(number))
         {
             
-            if (raiseIfNotFound)
+            if (IsNeedToRaiseIfNotFound)
             {
                 throw new ArgumentNullException();
             }

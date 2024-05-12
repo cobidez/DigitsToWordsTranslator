@@ -7,9 +7,9 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        var textNumber = new TextNumber(-12345678);
+        var textNumber = new TextNumber(-12345678,IndexOption.GetIndexOptionObjByParams(EGender.FEMALE,"кот","кота","котов"));
         textNumber.PrintStructure();
-        textNumber.
+        textNumber.PrintStringText();
 
     }
 }

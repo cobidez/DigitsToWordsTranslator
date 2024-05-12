@@ -16,15 +16,20 @@ internal class TextNumber
 
     private int[] parsedIntegerPartOnIndexesList; // Хранит индексы целой части
     private bool isNegative; // Негативное ли число
+    private readonly IndexesTextOption indexesTextOption; // Настройки разрядов
+    private NumberTextValueDict numberTextValueDict = new (false); // Не рейзимся, если не будет найдено значение в справочнике
 
     /// <summary>
     /// Конструктор, инициализирует целую часть
     /// </summary>
     /// <param name="integerValue"></param>
-    public TextNumber(int integerValue)
+    public TextNumber(
+        int integerValue,
+        IndexOption unitIndexOption)
     {
         InitNumberSign(integerValue);
         InitIntegerPart(integerValue);
+        indexesTextOption = new IndexesTextOption(unitIndexOption);
     }
 
     /// <summary>
@@ -44,13 +49,10 @@ internal class TextNumber
     /// <summary>
     /// Получить текст числа.
     /// </summary>
-    /// <returns></returns>
-    public string ToStringText(EGender unitIndexGender)
+    /// <returns>Строка текста числа</returns>
+    public string ToStringText()
     {
-        var numberTextValueDict = new NumberTextValueDict(false);
-        var indexesTextOption = new IndexesTextOption(unitIndexGender);
-
-        StringBuilder result = new StringBuilder();
+        var result = new StringBuilder();
 
         if (isNegative)
         {
@@ -58,16 +60,57 @@ internal class TextNumber
         }
 
         // Бежим по распаршеным разрядам от больших разрядов к меньшим и формируем текст
-        for (int i = parsedIntegerPartOnIndexesList.Length; i > 0; i--)
+        for (int i = parsedIntegerPartOnIndexesList.Length - 1; i >= 0; i--)
         {
+            var indexValue = parsedIntegerPartOnIndexesList[i];
 
+            // Определяем настройки
+            EGrammarCase grammarCase = GetGrammarCaseForIndexNumber(indexValue);
+            IndexOption indexOption = indexesTextOption.GetIndexOption((ENumberIndex)i);
 
+            // Обрабатываем сотни (третья цифра справа)
+            if (indexValue >= 100)
+            {
+                result.Append(
+                    numberTextValueDict.GetValue(
+                        (indexValue / 100) * 100, // Обрезаем все кроме сотен
+                        indexOption.gender) + " ");
+            }
 
-            result.Append(
-                numberTextValueDict.GetValue(
-                    parsedIntegerPartOnIndexesList[i],
-                    indexesTextOption.GetGender((ENumberIndex)i)
-                    ) + " ");
+            // Обрабатываем, если это десятки от 10 до 19 (первая и вторая цифра справа)
+            if (indexValue >= 10 && indexValue <= 19)
+            {
+                result.Append(
+                    numberTextValueDict.GetValue(
+                        indexValue,
+                        indexOption.gender) + " ");
+            }
+            // Обрабатываем, если это НЕ десятки от 10 до 19
+            else
+            {
+                int dozenValue = indexValue % 100;
+                bool isDozenExists = dozenValue > 9;
+
+                // Если это десятки (вторая цифра справа)
+                if (isDozenExists)
+                {
+                    result.Append(
+                        numberTextValueDict.GetValue(
+                            (dozenValue / 10) * 10, // Обрезаем все кроме десятков
+                            indexOption.gender) + " ");
+                }
+
+                int unitsValue = indexValue % 10;
+                if (!(unitsValue == 0 && isDozenExists))
+                {
+                    result.Append(
+                        numberTextValueDict.GetValue(
+                            unitsValue, // Только единицы
+                            indexOption.gender) + " ");
+                }
+            }
+
+            result.Append(indexOption.numberGramarCase.FirstCase + " ");
         }
 
         return result.ToString();
@@ -77,9 +120,9 @@ internal class TextNumber
     /// Отпечатать число
     /// </summary>
     /// <param name="unitIndexGender"></param>
-    public void PrintStringText(EGender unitIndexGender)
+    public void PrintStringText()
     {
-        Console.WriteLine(ToStringText(unitIndexGender));
+        Console.WriteLine(ToStringText());
     }
 
     /// <summary>
@@ -121,6 +164,33 @@ internal class TextNumber
         }
     }
 
-    private 
+    /// <summary>
+    /// Определить грамматический кейс для числа
+    /// </summary>
+    /// <param name="indexNumber"></param>
+    /// <returns></returns>
+    private EGrammarCase GetGrammarCaseForIndexNumber(int indexNumber)
+    {
+        // Смотрим только на часть с единицами и десятками (поэтому остаток от деления на 100)
+        int checkingNumber = indexNumber % 100;
+
+        if (checkingNumber >= 11 && checkingNumber <= 19)
+        {
+            return EGrammarCase.ThirdCase;
+        }
+        
+        // Если это не числа от 11 до 19, то проверяем последнюю цифру (поэтому остаток от деления на 10)
+        switch (checkingNumber % 10)
+        {
+            case 1:
+                return EGrammarCase.FirstCase;
+            case 2:
+            case 3:
+            case 4:
+                return EGrammarCase.SecondCase;
+            default:
+                return EGrammarCase.ThirdCase;
+        }
+    }
 
 }

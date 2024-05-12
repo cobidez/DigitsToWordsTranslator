@@ -9,46 +9,65 @@ namespace DigitsToWordsTranslator.Data;
 
 internal class IndexesTextOption
 {
-    private static Dictionary<ENumberIndex, EGender> indexGenderLink = GetIndexGenderOption();
-    private EGender unitIndexGender;
+    private static Dictionary<ENumberIndex, IndexOption> indexOptionDict = GetIndexOptionDict();
+    private IndexOption unitIndexOption;
 
     /// <summary>
     /// Получить справочник родов разрядов
     /// </summary>
     /// <returns></returns>
-    private static Dictionary<ENumberIndex, EGender> GetIndexGenderOption()
+    private static Dictionary<ENumberIndex, IndexOption> GetIndexOptionDict()
     {
-        var result  = new Dictionary<ENumberIndex, EGender>();
+        var result  = new Dictionary<ENumberIndex, IndexOption>();
 
-        // Добавляем информацию по тысячам, миллионам и миллиардам
-        result.Add(ENumberIndex.THOUSAND, EGender.FEMALE);
-        result.Add(ENumberIndex.MILLION, EGender.MALE);
-        result.Add(ENumberIndex.BILLION, EGender.MALE);
+        // Добавляем информацию по тысячам
+        result.Add(
+            ENumberIndex.THOUSAND,
+            IndexOption.GetIndexOptionObjByParams(
+                EGender.FEMALE,
+                "тысяча",
+                "тысячи",
+                "тысяч"));
 
+        // Добавляем информацию о миллионах
+        result.Add(
+            ENumberIndex.MILLION,
+            IndexOption.GetIndexOptionObjByParams(
+                EGender.MALE,
+                "миллион",
+                "миллиона",
+                "миллионов"));
+
+        // Добавляем информацию о миллиардах
+        result.Add(
+            ENumberIndex.BILLION,
+            IndexOption.GetIndexOptionObjByParams(
+                EGender.MALE,
+                "миллиард",
+                "миллиарда",
+                "миллиардов"));
         return result;
     }
 
     /// <summary>
     /// Конструктор объекта IndexesTextOption.
     /// </summary>
-    /// <param name="unitIndexGender">Род разряда единиц</param>
-    public IndexesTextOption(EGender unitIndexGender)
+    /// <param name="unitIndexOption">Настройка разряда единиц</param>
+    public IndexesTextOption(IndexOption unitIndexOption)
     {
-        this.unitIndexGender = unitIndexGender;
+        this.unitIndexOption = unitIndexOption;
     }
 
     /// <summary>
-    /// Получить род разряда
+    /// Получить настройку разряда
     /// </summary>
     /// <param name="numberIndex">Разряд</param>
     /// <returns></returns>
-    public EGender GetGender(ENumberIndex numberIndex)
+    public IndexOption GetIndexOption(ENumberIndex numberIndex)
     {
         return numberIndex == ENumberIndex.UNIT ?
-            unitIndexGender :
-            indexGenderLink.GetValueOrDefault(numberIndex);
+            unitIndexOption :
+            indexOptionDict.GetValueOrDefault(numberIndex);
     }
-
-    
 }
 
