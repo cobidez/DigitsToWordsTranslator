@@ -23,6 +23,21 @@ internal class TextNumber
     /// Конструктор, инициализирует целую часть
     /// </summary>
     /// <param name="integerValue"></param>
+    public TextNumber(int integerValue) 
+        : this(
+              integerValue,
+              new IndexOption(
+                  EGender.MALE,
+                  "",
+                  "",
+                  ""))
+    { }
+
+    /// <summary>
+    /// Конструктор, инициализирует целую часть
+    /// </summary>
+    /// <param name="integerValue"></param>
+    /// <param name="unitIndexOption"></param>
     public TextNumber(
         int integerValue,
         IndexOption unitIndexOption)
@@ -101,7 +116,8 @@ internal class TextNumber
                 }
 
                 int unitsValue = indexValue % 10;
-                if (!(unitsValue == 0 && isDozenExists))
+                if (!(unitsValue == 0 && 
+                    (isDozenExists || parsedIntegerPartOnIndexesList.Length > 1)))
                 {
                     result.Append(
                         numberTextValueDict.GetValue(
@@ -110,10 +126,10 @@ internal class TextNumber
                 }
             }
 
-            result.Append(indexOption.numberGramarCase.FirstCase + " ");
+            result.Append(indexOption.GetGrammarCaseValue(grammarCase) + " ");
         }
 
-        return result.ToString();
+        return result.ToString()[0..1].ToUpper() + result.ToString()[1..].TrimEnd();
     }
 
     /// <summary>
@@ -122,7 +138,7 @@ internal class TextNumber
     /// <param name="unitIndexGender"></param>
     public void PrintStringText()
     {
-        Console.WriteLine(ToStringText());
+        Console.WriteLine($"Результат: {ToStringText()}.");
     }
 
     /// <summary>

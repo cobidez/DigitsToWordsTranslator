@@ -18,66 +18,38 @@ internal record IndexOption
     public readonly EGender gender;
 
     /// <summary>
-    /// Рекорд с кейсами падежей слов в зависимости от чисел.
+    /// Словарь с кейсами падежей слов в зависимости от чисел.
     /// </summary>
-    public readonly NumberGramarCase numberGramarCase;
+    public readonly Dictionary<EGrammarCase, string> numberGramarCase = [];
 
-    public IndexOption(EGender gender, NumberGramarCase numberGramarCase)
+    public IndexOption() : this(EGender.MALE,"", "", "")
+    {
+    }
+
+    /// <summary>
+    /// Инициализирует объект IndexOption
+    /// </summary>
+    /// <param name="gender"></param>
+    /// <param name="firstCaseValue"></param>
+    /// <param name="secondCaseValue"></param>
+    /// <param name="thirdCaseValue"></param>
+    public IndexOption(
+        EGender gender, 
+        string firstCaseValue,
+        string secondCaseValue,
+        string thirdCaseValue)
     {
         this.gender = gender;
-        this.numberGramarCase = numberGramarCase;
+        numberGramarCase.Add(EGrammarCase.FirstCase, firstCaseValue);
+        numberGramarCase.Add(EGrammarCase.SecondCase, secondCaseValue);
+        numberGramarCase.Add(EGrammarCase.ThirdCase, thirdCaseValue);
     }
 
     /// <summary>
-    /// Инициирует новый объект IndexOption по входным параметрам.
+    /// Получить информацию о кейсе числа
     /// </summary>
-    /// <param name="gender">Род разряда</param>
-    /// <param name="firstCase">Текст разряда в 1 кейсе</param>
-    /// <param name="secondCase">Текст разряда во 2 кейсе</param>
-    /// <param name="thirdCase">Текст разряда в 3 кейсе</param>
-    /// <returns>Объект типа IndexOption</returns>
-    public static IndexOption GetIndexOptionObjByParams(
-        EGender gender,
-        string firstCase,
-        string secondCase,
-        string thirdCase)
-    {
-        return new IndexOption(
-            gender,
-            new NumberGramarCase(
-                firstCase,
-                secondCase,
-                thirdCase));
-    }
-
-    /// <summary>
-    /// Рекорд с кейсами падежей слов в зависимости от чисел.
-    /// </summary>
-    internal record NumberGramarCase
-    {
-        /// <summary>
-        /// Первый кейс, когда в единственном числе. 
-        /// Один кот.
-        /// </summary>
-        public readonly string FirstCase;
-
-        /// <summary>
-        /// Второй кейс, когда значение от 2 до 4.
-        /// Два кота, тридцать три кота
-        /// </summary>
-        public readonly string SecondCase;
-
-        /// <summary>
-        /// Третий кейс, все остальные варианты, плюс от 10 до 19.
-        /// Девятнадцать котов, тридцать шесть котов.
-        /// </summary>
-        public readonly string ThirdCase;
-
-        public NumberGramarCase(string firstCase, string secondCase, string thirdCase)
-        {
-            FirstCase = firstCase;
-            SecondCase = secondCase;
-            ThirdCase = thirdCase;
-        }
-    }
+    /// <param name="grammarCase">Кейс</param>
+    /// <returns>Значение</returns>
+    public string GetGrammarCaseValue(EGrammarCase grammarCase) 
+        => numberGramarCase.GetValueOrDefault(grammarCase);
 }

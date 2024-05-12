@@ -23,7 +23,7 @@ internal class IndexesTextOption
         // Добавляем информацию по тысячам
         result.Add(
             ENumberIndex.THOUSAND,
-            IndexOption.GetIndexOptionObjByParams(
+            new IndexOption(
                 EGender.FEMALE,
                 "тысяча",
                 "тысячи",
@@ -32,7 +32,7 @@ internal class IndexesTextOption
         // Добавляем информацию о миллионах
         result.Add(
             ENumberIndex.MILLION,
-            IndexOption.GetIndexOptionObjByParams(
+            new IndexOption(
                 EGender.MALE,
                 "миллион",
                 "миллиона",
@@ -41,7 +41,7 @@ internal class IndexesTextOption
         // Добавляем информацию о миллиардах
         result.Add(
             ENumberIndex.BILLION,
-            IndexOption.GetIndexOptionObjByParams(
+            new IndexOption(
                 EGender.MALE,
                 "миллиард",
                 "миллиарда",
